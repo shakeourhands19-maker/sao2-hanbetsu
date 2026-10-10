@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>スマスロ SAOⅡ 実戦判別ノート</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#151d31;--line:#2b3650;--text:#f3f6ff;--muted:#a9b4cc;--accent:#7dd3fc;--good:#86efac;--warn:#fcd34d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}header{padding:22px 16px 16px;background:linear-gradient(135deg,#172554,#111827);border-bottom:1px solid var(--line)}h1{font-size:22px;margin:0 0 5px}header p{margin:0;color:var(--muted);font-size:13px}.wrap{max-width:760px;margin:auto;padding:14px 12px 42px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}.tab,button{border:1px solid var(--line);border-radius:11px;padding:11px 8px;background:#202b43;color:var(--text);font-weight:650;font-size:14px}.tab.active{background:#075985;border-color:#38bdf8}.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:15px;margin:10px 0}.panel h2{font-size:18px;margin:0 0 10px}.panel h3{font-size:15px;margin:15px 0 7px}.note{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:flex;flex-direction:column;gap:5px;margin:9px 0}.field label{font-size:13px;color:var(--muted)}input,select,textarea{width:100%;border:1px solid var(--line);background:#0d1527;color:var(--text);border-radius:9px;padding:11px;font-size:16px;min-width:0}input[type=checkbox]{width:19px;height:19px;accent-color:#38bdf8}.check{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid #263149}.check:last-child{border:0}.check span{flex:1}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1;min-width:110px}.primary{background:#0369a1;border-color:#38bdf8}.danger{background:#4c1d2c;border-color:#9f435d}.metric{background:#0d1527;border:1px solid var(--line);border-radius:10px;padding:12px}.metric strong{display:block;font-size:20px}.metric small{color:var(--muted)}.hidden{display:none!important}.result{border-left:3px solid var(--accent);padding:10px 12px;background:#0d1527;border-radius:7px;margin-top:10px}.tag{display:inline-block;font-size:12px;padding:3px 8px;border:1px solid var(--line);border-radius:20px;color:var(--muted);margin:2px}.footer{font-size:12px;color:var(--muted);padding:8px 2px}button:active{transform:scale(.99)}@media(min-width:600px){.wrap{padding:20px}.panel{padding:18px}}
+</style>
+</head>
+<body>
+<header><h1>スマスロ SAOⅡ 実戦判別ノート</h1><p>リセット判別補助・設定推測・実戦データ保存｜試作版 0.1</p></header>
+<main class="wrap">
+<div class="tabs" role="tablist"><button class="tab active" data-tab="reset">朝一・リセット</button><button class="tab" data-tab="setting">設定推測</button><button class="tab" data-tab="log">実戦記録</button></div>
+<section id="reset" class="view">
+<div class="panel"><h2>朝一の状況</h2><p class="note">確認できた事実を記録します。チェック数は確率ではなく、観察記録の整理用です。</p>
+<div class="grid"><div class="field"><label for="date">日付</label><input id="date" type="date"></div><div class="field"><label for="hall">ホール・台番号</label><input id="hall" placeholder="例：○○店 123番"></div></div>
+<div class="field"><label for="morningGames">朝一からの通常時ゲーム数</label><input id="morningGames" type="number" min="0" inputmode="numeric" placeholder="ゲーム数"></div>
+<div class="field"><label for="czCount">CZ当選回数</label><input id="czCount" type="number" min="0" inputmode="numeric" value="0"></div>
+<div class="field"><label for="atCount">AT初当たり回数</label><input id="atCount" type="number" min="0" inputmode="numeric" value="0"></div>
+<h3>朝一に確認したこと</h3>
+<div id="resetChecks">
+<label class="check"><input type="checkbox" value="店のリセット傾向を把握"><span>店のリセット傾向を把握している</span></label>
+<label class="check"><input type="checkbox" value="前日最終ゲーム数を確認"><span>前日最終ゲーム数を確認した</span></label>
+<label class="check"><input type="checkbox" value="朝一の液晶・ステージを記録"><span>朝一の液晶・ステージを記録した</span></label>
+<label class="check"><input type="checkbox" value="CZ間のゲーム数と当選契機を記録"><span>CZ間ゲーム数と当選契機を記録した</span></label>
+<label class="check"><input type="checkbox" value="リセットを示す確実な根拠を確認"><span>リセットを示す確実な根拠を確認した（根拠はメモへ）</span></label>
+</div>
+<div class="field"><label for="resetMemo">根拠・メモ</label><textarea id="resetMemo" rows="3" placeholder="演出、当選契機、前日最終G数など"></textarea></div>
+<div class="result" id="resetResult">入力内容をもとに、確認項目と記録漏れを表示します。リセット率は算出しません。</div>
+<div class="actions"><button class="primary" id="saveReset">この記録を保存</button><button id="clearReset">入力をクリア</button></div>
+</div>
+<div class="panel"><h2>判別上の注意</h2><p class="note">朝一の挙動だけで設定変更を断定できるとは限りません。天井短縮などの仕様は、機種情報と実戦での確認条件を照合して扱ってください。未確認の解析値から「リセット期待度○％」を作ることはしません。</p></div>
+</section>
+<section id="setting" class="view hidden">
+<div class="panel"><h2>設定推測の実戦データ</h2><p class="note">まずは実測値と設定示唆を正確に記録する版です。メーカー公表値・信頼できる解析値を確認後に、設定別の尤度計算を追加します。</p>
+<div class="grid"><div class="field"><label for="normalGames">通常時ゲーム数</label><input id="normalGames" type="number" min="0" inputmode="numeric" value="0"></div><div class="field"><label for="czTotal">CZ回数</label><input id="czTotal" type="number" min="0" inputmode="numeric" value="0"></div><div class="field"><label for="atTotal">AT初当たり回数</label><input id="atTotal" type="number" min="0" inputmode="numeric" value="0"></div><div class="field"><label for="strongB">強チャンス目B回数（把握分）</label><input id="strongB" type="number" min="0" inputmode="numeric" value="0"></div></div>
+<div class="grid"><div class="metric"><small>CZ実測確率</small><strong id="czRate">—</strong><small id="czCountText">分母：通常時0G</small></div><div class="metric"><small>AT初当たり実測確率</small><strong id="atRate">—</strong><small id="atCountText">分母：通常時0G</small></div></div>
+<h3>確認できた設定示唆</h3>
+<div class="field"><label for="hint">示唆内容（自分で確認した表記を入力）</label><input id="hint" placeholder="例：終了画面の示唆内容"></div>
+<div class="field"><label for="hintStrength">根拠の区分</label><select id="hintStrength"><option value="未確認">解析未確認・区分不明</option><option value="高設定示唆">高設定示唆</option><option value="設定確定">設定確定（確定条件を要確認）</option><option value="否定示唆">特定設定の否定示唆</option></select></div>
+<div class="actions"><button class="primary" id="addHint">示唆を記録</button></div><div id="hintsList" class="note">まだ示唆は記録されていません。</div>
+<div class="result" id="settingResult">設定別の解析値が未登録のため、設定1〜6の確率はまだ表示しません。実測確率と確認済み示唆を蓄積できます。</div>
+<div class="actions"><button class="primary" id="saveSetting">設定データを保存</button><button id="resetSetting">数値をリセット</button></div>
+</div>
+</section>
+<section id="log" class="view hidden">
+<div class="panel"><h2>保存した実戦記録</h2><p class="note">記録はこのブラウザ内に保存されます。同じ端末・同じブラウザで利用してください。ブラウザデータを消すと失われることがあります。</p>
+<div class="actions"><button class="primary" id="export">JSONでバックアップ</button><button id="importBtn">バックアップを読み込む</button><input class="hidden" id="importFile" type="file" accept="application/json"></div>
+<div id="records" style="margin-top:12px"></div><div class="actions"><button class="danger" id="deleteAll">全記録を削除</button></div></div>
+</section>
+<div class="footer">試作版：解析値未検証の段階では推測確率を表示しません。遊技判断はご自身の責任で行ってください。</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const STORE='sao2-hanbetsu-v01';
+let data=JSON.parse(localStorage.getItem(STORE)||'{"records":[],"hints":[]}');
+const today=new Date();$('date').value=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('hidden',x.id!==b.dataset.tab));if(b.dataset.tab==='log')renderRecords()}));
+function num(id){return Math.max(0,Number($(id).value)||0)}
+function rate(g,n){return g>0&&n>0?'1/'+(g/n).toFixed(1):'—'}
+function calcSetting(){const g=num('normalGames'),c=num('czTotal'),a=num('atTotal');$('czRate').textContent=rate(g,c);$('atRate').textContent=rate(g,a);$('czCountText').textContent='分母：通常時'+g+'G／CZ '+c+'回';$('atCountText').textContent='分母：通常時'+g+'G／AT '+a+'回'}
+['normalGames','czTotal','atTotal','strongB'].forEach(id=>$(id).addEventListener('input',calcSetting));
+function selectedChecks(){return [...document.querySelectorAll('#resetChecks input:checked')].map(x=>x.value)}
+function resetSummary(){const c=selectedChecks();$('resetResult').textContent='確認項目 '+c.length+'/5 件。チェック数は設定変更の確率を意味しません。メモと前日データを併せて判断してください。'}
+document.querySelectorAll('#resetChecks input').forEach(x=>x.addEventListener('change',resetSummary));
+$('saveReset').onclick=()=>{const rec={type:'reset',date:$('date').value,hall:$('hall').value,games:num('morningGames'),cz:num('czCount'),at:num('atCount'),checks:selectedChecks(),memo:$('resetMemo').value,savedAt:new Date().toISOString()};data.records.unshift(rec);persist();alert('朝一記録を保存しました');};
+$('clearReset').onclick=()=>{['hall','morningGames','czCount','atCount','resetMemo'].forEach(id=>$(id).value=id==='czCount'||id==='atCount'?'0':'');document.querySelectorAll('#resetChecks input').forEach(x=>x.checked=false);resetSummary()};
+$('saveSetting').onclick=()=>{data.records.unshift({type:'setting',date:$('date').value,hall:$('hall').value,games:num('normalGames'),cz:num('czTotal'),at:num('atTotal'),strongB:num('strongB'),hints:[...data.hints],savedAt:new Date().toISOString()});persist();alert('設定データを保存しました');};
+$('resetSetting').onclick=()=>{['normalGames','czTotal','atTotal','strongB'].forEach(id=>$(id).value='0');calcSetting()};
+$('addHint').onclick=()=>{const name=$('hint').value.trim();if(!name){alert('示唆内容を入力してください');return}data.hints.push({name,strength:$('hintStrength').value,date:$('date').value});$('hint').value='';persist();renderHints()};
+function renderHints(){const el=$('hintsList');if(!data.hints.length){el.textContent='まだ示唆は記録されていません。';return}el.innerHTML=data.hints.map((h,i)=>'<div class="check"><span><b>'+esc(h.name)+'</b><br><span class="tag">'+esc(h.strength)+'</span> <span class="tag">'+esc(h.date||'日付なし')+'</span></span><button data-remove="'+i+'" style="flex:0 0 auto;padding:6px 10px">削除</button></div>').join('');el.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{data.hints.splice(Number(b.dataset.remove),1);persist();renderHints()})}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function persist(){localStorage.setItem(STORE,JSON.stringify(data));renderRecords()}
+function renderRecords(){const el=$('records');if(!data.records.length){el.innerHTML='<p class="note">まだ記録はありません。</p>';return}el.innerHTML=data.records.map((r,i)=>'<div class="panel"><b>'+esc(r.date)+'｜'+esc(r.hall||'ホール未入力')+'｜'+(r.type==='reset'?'朝一・リセット記録':'設定推測記録')+'</b><p class="note">'+(r.type==='reset'?'通常時 '+r.games+'G / CZ '+r.cz+'回 / AT '+r.at+'回<br>確認項目：'+(r.checks||[]).map(esc).join('、')+'<br>'+esc(r.memo||''): '通常時 '+r.games+'G / CZ '+r.cz+'回 / AT '+r.at+'回 / 強チャンス目B '+r.strongB+'回')+'</p><button data-del="'+i+'" class="danger">この記録を削除</button></div>').join('');el.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{data.records.splice(Number(b.dataset.del),1);persist()})}
+$('export').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sao2-hanbetsu-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;const v=JSON.parse(await f.text());if(!Array.isArray(v.records)||!Array.isArray(v.hints))throw Error('format');if(!confirm('現在の記録をバックアップ内容で置き換えますか？'))return;data=v;persist();renderHints();alert('読み込みました')}catch{alert('バックアップファイルを読み込めませんでした')}e.target.value=''};
+$('deleteAll').onclick=()=>{if(confirm('保存した実戦記録と示唆をすべて削除しますか？')){data={records:[],hints:[]};persist();renderHints()}};
+calcSetting();resetSummary();renderHints();renderRecords();
+</script>
+</body></html>
