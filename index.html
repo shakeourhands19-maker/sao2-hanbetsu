@@ -13,7 +13,7 @@
 <body>
 <header><h1>スマスロ SAOⅡ 設定推測ノート</h1><p>設定1〜6の推測・示唆記録・実戦データ保存</p></header>
 <main class="wrap">
-<div class="tabs" role="tablist"><button class="tab active" data-tab="setting">設定推測</button><button class="tab" data-tab="log">実戦記録</button></div>
+<div class="tabs" role="tablist"><button type="button" class="tab active" data-tab="setting" aria-selected="true">設定推測</button><button type="button" class="tab" data-tab="log" aria-selected="false">実戦記録</button></div>
 <section id="setting" class="view">
 <div class="panel"><h2>設定推測の実戦データ</h2><p class="note">実戦データと設定示唆を記録し、設定1〜6を推測します。</p>
 <div class="grid"><div class="field"><label for="date">日付</label><input id="date" type="date"></div><div class="field"><label for="hall">ホール・台番号（任意）</label><input id="hall" placeholder="例：○○店 123番"></div></div>
@@ -39,7 +39,7 @@ const $=id=>document.getElementById(id);
 const STORE='sao2-hanbetsu-v01';
 let data=JSON.parse(localStorage.getItem(STORE)||'{"records":[],"hints":[]}');
 const today=new Date();$('date').value=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
-document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('hidden',x.id!==b.dataset.tab));if(b.dataset.tab==='log')renderRecords()}));
+document.querySelectorAll('.tab').forEach(b=>{b.addEventListener('click',event=>{event.preventDefault();const target=b.dataset.tab;document.querySelectorAll('.tab').forEach(x=>{const active=x===b;x.classList.toggle('active',active);x.setAttribute('aria-selected',String(active))});document.querySelectorAll('.view').forEach(x=>{const visible=x.id===target;x.classList.toggle('hidden',!visible);x.style.display=visible?'block':'none'});if(target==='log'){try{renderRecords()}catch(err){const box=$('records');if(box)box.textContent='記録の表示でエラーが発生しました。ページを再読み込みしてください。';console.error(err)}}},false)});
 function num(id){return Math.max(0,Number($(id).value)||0)}
 function rate(g,n){return g>0&&n>0?'1/'+(g/n).toFixed(1):'—'}
 const settingRates={cz:[238.4,232.3,232.7,218.9,225.2,191.7],at:[386.2,364.3,368.1,326.8,340.6,269.6],strongB:[1057,993,936.2,885.6,840.2,799.2],end:[20177.5,17579.1,17586.3,13784.5,11459,7077.2]};
